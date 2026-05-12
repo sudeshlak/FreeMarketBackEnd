@@ -28,18 +28,17 @@ export class MongoHelper {
   /**
    * This function will initiate the Mongo Database connection
    */
-  public initiateMongoConnection(): void {
+  public async initiateMongoConnection(): Promise<void> {
     (<any>mongoose).Promise = global.Promise;
-    mongoose
-      .connect(Config.mongoUrl, {
+    try {
+      await mongoose.connect(Config.mongoUrl, {
         useUnifiedTopology: true,
         useNewUrlParser: true,
-      })
-      .then(() => {
-        console.log('Connected to MongoDb');
-      })
-      .catch((err: Error) => {
-        throw `There is error in connecting Mongo DB ${err.message}`;
       });
+      console.log('Connected to MongoDb');
+    } catch (err) {
+      console.error('There is error in connecting Mongo DB:', err);
+      throw err;
+    }
   }
 }

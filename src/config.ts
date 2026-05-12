@@ -2,8 +2,8 @@ const AWS = require('aws-sdk'); // Requiring AWS SDK.
 
 //mongoDB stored in the .env file
 export abstract class Config {
-  public static mongoUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.clyxp.mongodb.`
-    + `net/shopping_cart?retryWrites=true&w=majority`;
+  public static mongoUrl = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}`
+    + `@freemarcket.wa1erew.mongodb.net/?appName=freeMarcket`;
 }
 
 // Configuring AWS
