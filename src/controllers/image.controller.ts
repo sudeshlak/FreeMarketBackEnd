@@ -9,7 +9,13 @@ export class ImageController {
   generatePutUrl(ctx: Context, image: IImage) {
     return new Promise((resolve, reject) => {
       // Note Bucket is retrieved from the env variable above.
-      const params = { Bucket, Key: image.imageName, ContentType: image.imageFileType };
+      const params = {
+        Bucket,
+        Key: image.imageName,
+        ContentType: image.imageFileType.startsWith("image/")
+          ? image.imageFileType
+          : `image/${image.imageFileType}`
+      };
       // Note operation in this case is putObject
       s3.getSignedUrl('putObject', params, function(err: Error, url: string) {
         if (err) {
