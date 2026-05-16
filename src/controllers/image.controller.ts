@@ -1,45 +1,45 @@
+import { promisify } from 'util';
 import { Context } from '../types/context';
-import { Bucket } from '../config';
-import { s3 } from '../config';
+import { Bucket, s3 } from '../config';
 import { IImage } from '../types/imageTypes';
 import { VerifyAdminAuthorization } from '../decorators/auth.decorator';
 
+const getSignedUrlPromise = promisify(s3.getSignedUrl.bind(s3)) as (
+  operation: string,
+  params: Record<string, unknown>,
+) => Promise<string>;
+
 export class ImageController {
-  @VerifyAdminAuthorization
-  generatePutUrl(ctx: Context, image: IImage) {
-    return new Promise((resolve, reject) => {
-      // Note Bucket is retrieved from the env variable above.
-      const params = {
-        Bucket,
-        Key: image.imageName
-      };
-      // Note operation in this case is putObject
-      s3.getSignedUrl('putObject', params, function(err: Error, url: string) {
-        if (err) {
-          reject(err);
-        }
-        // If there is no errors we can send back the pre-signed PUT URL
-        resolve(url);
-      });
-    });
+  private normalizeMime(type: string): string {
+    if (!type) return 'image/jpeg';
+
+    const map: Record<string, string> = {
+      jpg: 'image/jpeg',
+      jpeg: 'image/jpeg',
+      png: 'image/png',
+      gif: 'image/gif',
+      webp: 'image/webp',
+    };
+
+    return map[type.toLowerCase()] || type;
   }
 
-  generateGetUrl(image: IImage) {
-    return new Promise((resolve, reject) => {
-      const params: any = {
-        Bucket,
-        Key: image.imageName,
-        Expires: 120, // 2 minutes
-      };
-      // Note operation in this case is getObject
-      s3.getSignedUrl('getObject', params, (err: Error, url: string) => {
-        if (err) {
-          reject(err);
-        } else {
-          // If there is no errors we will send back the pre-signed GET URL
-          resolve(url);
-        }
-      });
-    });
+  @VerifyAdminAuthorization
+  async generatePutUrl(ctx: Context, image: IImage): Promise<string> {
+    const params = {
+      Bucket,
+      Key: image.imageName,
+      ContentType: this.normalizeMime(image.imageFileType),
+    };
+    return await getSignedUrlPromise('putObject', params);
+  }
+
+  async generateGetUrl(image: IImage): Promise<string> {
+    const params = {
+      Bucket,
+      Key: image.imageName,
+      Expires: 120,
+    };
+    return await getSignedUrlPromise('getObject', params);
   }
 }
