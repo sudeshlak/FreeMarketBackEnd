@@ -24,19 +24,14 @@ export class ImageController {
     return map[type.toLowerCase()] || type;
   }
 
-//   @VerifyAdminAuthorization
-//   async generatePutUrl(ctx: Context, image: IImage): Promise<string> {
-//     const params = {
-//       Bucket,
-//       Key: image.imageName,
-//       ContentType: this.normalizeMime(image.imageFileType),
-//     };
-//     return await getSignedUrlPromise('putObject', params);
-//   }
-
   @VerifyAdminAuthorization
-    async generatePutUrl(_: Context, __: IImage): Promise<string> {
-    return "https://example.com/fake-upload-url";
+  async generatePutUrl(ctx: Context, image: IImage): Promise<string> {
+    const params = {
+      Bucket,
+      Key: image.imageName,
+      ContentType: this.normalizeMime(image.imageFileType),
+    };
+    return await getSignedUrlPromise('putObject', params);
   }
 
   async generateGetUrl(image: IImage): Promise<string> {
