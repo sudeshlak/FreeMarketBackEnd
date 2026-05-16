@@ -29,7 +29,6 @@ export class ImageController {
     const params = {
       Bucket,
       Key: image.imageName,
-      ContentType: this.normalizeMime(image.imageFileType),
     };
     return await getSignedUrlPromise('putObject', params);
   }
