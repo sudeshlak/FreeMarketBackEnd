@@ -91,7 +91,7 @@ input InputOrder {
 
 type Query {
     getAllCategories: [Category]
-    getAllProducts: [Product]
+    getAllProducts(search: String): [Product]
     getAllOrders:[Order]
     getAllCoupons:[Coupon]
 }

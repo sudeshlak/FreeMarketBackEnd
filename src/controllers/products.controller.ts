@@ -15,8 +15,8 @@ export class ProductsController {
     return await addProductService(newProduct);
   }
 
-  async getAllProducts() {
-    return await getAllProductService();
+  async getAllProducts(search?:string) {
+    return await getAllProductService(search);
   }
 
   async getOneProduct(id: string) {

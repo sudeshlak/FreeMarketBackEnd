@@ -34,7 +34,7 @@ async function bootstrap(): Promise<void> {
     const httpServer = createServer(app);
     httpServer.listen({ port }, (): void =>
       console.log(`\n🚀 GraphQL is now running on http://localhost:${port}/graphql`)
-    );
+    ); 
   } catch (err) {
     console.error('Failed to start server:', err);
     process.exit(1);

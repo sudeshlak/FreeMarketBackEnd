@@ -21,8 +21,8 @@ const resolvers: IResolvers = {
     getAllCategories: () => {
       return categoryController.getAllCategories();
     },
-    getAllProducts: async () => {
-      return await productController.getAllProducts();
+    getAllProducts: async (_,{ search }) => {
+      return await productController.getAllProducts(search);
     },
     getAllOrders: async (_, args, ctx: Context) => {
       return await orderController.getAllOrders(ctx);
