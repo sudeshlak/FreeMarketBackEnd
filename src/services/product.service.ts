@@ -10,9 +10,12 @@ export const addProductService = async (newProduct: INewProduct) => {
   }
 };
 
-export const getAllProductService = async () => {
+export const getAllProductService = async (search?: string) => {
   try {
-    return await Products.find();
+    const filter = search
+    ? { title: { $regex: search, $options: 'i' },
+    } : {};
+    return await Products.find(filter);
   } catch (err) {
     throw new Error('Products not found');
   }
