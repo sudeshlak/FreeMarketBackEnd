@@ -29,6 +29,15 @@ export class OrdersController {
 
   @VerifyAuthorization
   async addOrder(ctx: Context, newOrder: INewOrder) {
+    const Order = await addOrderService(newOrder);
+    
+    // Emit event
+    appEvents.emit(ORDER_STATUS_CHANGED, {
+      email: Order.requestedUser.email,
+      orderCode: Order.orderCode,
+      status: Order.status,
+    });
+
     return await addOrderService(newOrder);
   }
 
