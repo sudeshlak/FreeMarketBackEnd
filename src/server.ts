@@ -8,6 +8,7 @@ import compression from 'compression';
 import cors from 'cors';
 import schema from './graphql/schema';
 import { MongoHelper } from './helpers/mongoHelpers';
+import './events/order.listners';
 
 const app = express();
 const mHelper = new MongoHelper();

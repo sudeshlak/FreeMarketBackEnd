@@ -10,6 +10,7 @@ import { VerifyAdminAuthorization, VerifyAuthorization } from '../decorators/aut
 import * as jwt from 'jsonwebtoken';
 import { INewProduct, IProduct } from '../types/productTypes';
 import { getOneProductService, updateProductService } from '../services/product.service';
+import { appEvents, ORDER_STATUS_CHANGED } from '../events/appEvents';
 
 export class OrdersController {
   @VerifyAuthorization
@@ -28,6 +29,15 @@ export class OrdersController {
 
   @VerifyAuthorization
   async addOrder(ctx: Context, newOrder: INewOrder) {
+    const Order = await addOrderService(newOrder);
+    
+    // Emit event
+    appEvents.emit(ORDER_STATUS_CHANGED, {
+      email: Order.requestedUser.email,
+      orderCode: Order.orderCode,
+      status: Order.status,
+    });
+
     return await addOrderService(newOrder);
   }
 
@@ -68,10 +78,20 @@ export class OrdersController {
         await updateProductService(productInOrder.id, newProduct);
       }
     }
+    
+    const updatedOrder = await changeOrderStatusService(id, newState);
+    
+    // Emit event
+    appEvents.emit(ORDER_STATUS_CHANGED, {
+      email: order.requestedUser.email,
+      orderCode: order.orderCode,
+      status: newState,
+    });
+    
     return {
-      changed: true,
-      order: await changeOrderStatusService(id, newState),
-      productErrorMessages: null,
+    changed: true,
+    order: updatedOrder,
+    productErrorMessages: null,
     };
   }
 
