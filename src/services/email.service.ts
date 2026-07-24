@@ -18,7 +18,7 @@ export const sendOrderStatusEmail = async(
     await transporter.sendMail({
         from: process.env.EMAIL_USER,
         to: payload.email,
-        subject: `Order ${payload.orderCode} status updated`,
-        text: `Order ${payload.orderCode} status changed to ${payload.status}`
+        subject: `Free Market - Order ${payload.orderCode} status updated`,
+        text: `Your Order ${payload.orderCode} status changed to ${payload.status}`
     });
 }
