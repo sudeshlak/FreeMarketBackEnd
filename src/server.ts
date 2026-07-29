@@ -27,10 +27,9 @@ async function bootstrap(): Promise<void> {
         return await mHelper.validateUser(req);
       },
     });
-    app.use('/exports', exportsRouter);
-    
     app.use(cors());
     app.use(compression());
+    app.use('/exports', exportsRouter);
     server.applyMiddleware({ app, path: '/graphql' });
 
     const port = Number(process.env.PORT) || 3002;

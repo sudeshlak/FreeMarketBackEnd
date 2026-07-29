@@ -1,8 +1,9 @@
 import { pipeline, Transform, TransformCallback } from "stream";
+import { promisify } from "util";
 
 const Order = require('../models/orders');
 
-
+const pipelineAsync = promisify(pipeline);
 class OrderToCsvTransform extends Transform {
     private isFirstChunk = true;
     private header = 'orderCode,status,paymentType,paymentStatus,requestedDate,discountPercentage,customerEmail,customerName,billingFullName,billingAddress,billingCity,billingPostalCode,billingCountry,billingContactNumber,productCount\n';
@@ -62,7 +63,7 @@ export async function streamOrdersToCsv(res:any):Promise<void>{
     try {
 
         res.setHeader('Content-type','text/csv; charset=utf-8');
-        res.setHearder('Content-Disposition', 'attach');
+        res.setHeader('Content-Disposition', 'attach');
 
         const cursor  = Order.find({}).populate('user').populate('requestedUser').cursor();
 
@@ -70,7 +71,7 @@ export async function streamOrdersToCsv(res:any):Promise<void>{
         const csvTransform = new OrderToCsvTransform();
     
         // Pipeline: cursor → transform → response
-        await pipeline(cursor, csvTransform, res);
+        await pipelineAsync(cursor, csvTransform, res);
         
     } catch (error) {
         // Destroy response if headers already sent
