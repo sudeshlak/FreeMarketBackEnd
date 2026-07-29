@@ -9,6 +9,7 @@ import cors from 'cors';
 import schema from './graphql/schema';
 import { MongoHelper } from './helpers/mongoHelpers';
 import './events/order.listners';
+import exportsRouter from './routes/exports.routes';
 
 const app = express();
 const mHelper = new MongoHelper();
@@ -26,9 +27,9 @@ async function bootstrap(): Promise<void> {
         return await mHelper.validateUser(req);
       },
     });
-
     app.use(cors());
     app.use(compression());
+    app.use('/exports', exportsRouter);
     server.applyMiddleware({ app, path: '/graphql' });
 
     const port = Number(process.env.PORT) || 3002;
